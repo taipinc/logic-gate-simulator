@@ -8,7 +8,8 @@ const Toolbar = ({ onAddComponent }) => {
     { type: 'NOT', label: 'NOT Gate', color: '#fff3e0' },
     { type: 'XOR', label: 'XOR Gate', color: '#f3e5f5' },
     { type: 'INPUT', label: 'Input Switch', color: '#e0f2f1' },
-    { type: 'OUTPUT', label: 'Output LED', color: '#ffebee' }
+    { type: 'OUTPUT', label: 'Output LED', color: '#ffebee' },
+    { type: 'BINARY_DISPLAY', label: 'Binary Display', color: '#f3e5f5' }
   ];
 
   return (
