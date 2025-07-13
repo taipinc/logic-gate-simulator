@@ -19,6 +19,11 @@ const useSimulatorStore = create((set, get) => ({
   wireStart: null,
   tempWire: null,
 
+  // Selection state
+  selectedComponents: [],
+  isSelecting: false,
+  selectionBox: null,
+
   // Actions
   addComponent: (type) => {
     let inputs = [];
@@ -131,6 +136,74 @@ const useSimulatorStore = create((set, get) => ({
     });
   },
 
+  // Selection actions
+  startSelection: (x, y) => {
+    set({
+      isSelecting: true,
+      selectionBox: { startX: x, startY: y, endX: x, endY: y }
+    });
+  },
+
+  updateSelection: (x, y) => {
+    set(state => ({
+      selectionBox: state.selectionBox ? {
+        ...state.selectionBox,
+        endX: x,
+        endY: y
+      } : null
+    }));
+  },
+
+  finishSelection: () => {
+    const { selectionBox, components } = get();
+    if (!selectionBox) return;
+
+    const minX = Math.min(selectionBox.startX, selectionBox.endX);
+    const maxX = Math.max(selectionBox.startX, selectionBox.endX);
+    const minY = Math.min(selectionBox.startY, selectionBox.endY);
+    const maxY = Math.max(selectionBox.startY, selectionBox.endY);
+
+    const selectedIds = components
+      .filter(comp => 
+        comp.x >= minX && comp.x <= maxX && 
+        comp.y >= minY && comp.y <= maxY
+      )
+      .map(comp => comp.id);
+
+    set({
+      selectedComponents: selectedIds,
+      isSelecting: false,
+      selectionBox: null
+    });
+  },
+
+  cancelSelection: () => {
+    set({
+      isSelecting: false,
+      selectionBox: null,
+      selectedComponents: []
+    });
+  },
+
+  moveSelectedComponents: (deltaX, deltaY) => {
+    const { selectedComponents } = get();
+    set(state => ({
+      components: state.components.map(comp =>
+        selectedComponents.includes(comp.id)
+          ? { ...comp, x: comp.x + deltaX, y: comp.y + deltaY }
+          : comp
+      )
+    }));
+    get().calculateLogic();
+  },
+
+  removeWire: (wireId) => {
+    set(state => ({
+      connections: state.connections.filter(conn => conn.id !== wireId)
+    }));
+    get().calculateLogic();
+  },
+
   updateInputValue: (componentId, value) => {
     set(state => ({
       components: state.components.map(comp =>
@@ -239,8 +312,11 @@ const useSimulatorStore = create((set, get) => ({
         fromX = fromComp.x + 65;
         fromY = fromComp.y + 20;
       } else if (fromComp.type === 'BINARY_DISPLAY') {
-        fromX = fromComp.x + 125;
-        fromY = fromComp.y + 30;
+        fromX = fromComp.x + 105;
+        fromY = fromComp.y + 40;
+      } else if (fromComp.type === 'OUTPUT') {
+        fromX = fromComp.x + 65;
+        fromY = fromComp.y + 20;
       } else {
         fromX = fromComp.x + 85;
         fromY = fromComp.y + 25;

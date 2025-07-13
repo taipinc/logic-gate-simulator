@@ -1,7 +1,15 @@
 import React from 'react';
 import { Shape } from 'react-konva';
+import useSimulatorStore from '../../stores/simulatorStore';
 
-const Wire = ({ startX, startY, endX, endY, isActive = false }) => {
+const Wire = ({ id, startX, startY, endX, endY, isActive = false }) => {
+  const { removeWire } = useSimulatorStore();
+
+  const handleClick = (e) => {
+    e.cancelBubble = true;
+    removeWire(id);
+  };
+
   return (
     <Shape
       sceneFunc={(context, shape) => {
@@ -21,14 +29,14 @@ const Wire = ({ startX, startY, endX, endY, isActive = false }) => {
         context.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, endX, endY);
         
         // Style the line
-        context.lineWidth = 3;
+        context.lineWidth = 4; // Thicker for easier clicking
         context.strokeStyle = isActive ? '#4CAF50' : '#666';
         context.lineCap = 'round';
         context.lineJoin = 'round';
         
         // Add glow effect for active wires
         if (isActive) {
-          context.shadowBlur = 8;
+          context.shadowBlur = 4;
           context.shadowColor = '#4CAF50';
         }
         
@@ -36,7 +44,8 @@ const Wire = ({ startX, startY, endX, endY, isActive = false }) => {
         context.fillStrokeShape(shape);
       }}
       stroke={isActive ? '#4CAF50' : '#666'}
-      strokeWidth={3}
+      strokeWidth={4}
+      onClick={handleClick}
     />
   );
 };

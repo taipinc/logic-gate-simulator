@@ -1,9 +1,9 @@
 import React from 'react';
-import { Group, Rect, Text, Circle } from 'react-konva';
+import { Group, Path, Circle } from 'react-konva';
 import useSimulatorStore from '../../stores/simulatorStore';
 
 const ORGate = ({ x, y, id, inputs = [false, false], output = false }) => {
-  const { updateComponentPosition, startWireDrawing, finishWireDrawing, isDrawingWire } = useSimulatorStore();
+  const { updateComponentPosition, startWireDrawing, finishWireDrawing, isDrawingWire, selectedComponents } = useSimulatorStore();
 
   const handleDragEnd = (e) => {
     updateComponentPosition(id, e.target.x(), e.target.y());
@@ -26,6 +26,8 @@ const ORGate = ({ x, y, id, inputs = [false, false], output = false }) => {
     }
   };
 
+  const isSelected = selectedComponents.includes(id);
+
   return (
     <Group
       x={x}
@@ -33,33 +35,19 @@ const ORGate = ({ x, y, id, inputs = [false, false], output = false }) => {
       draggable
       onDragEnd={handleDragEnd}
     >
-      {/* Gate body */}
-      <Rect
-        x={0}
-        y={0}
-        width={80}
-        height={50}
+      {/* OR Gate Symbol - curved shield shape */}
+      <Path
+        data="M 0 10 Q 20 10 40 25 Q 20 40 0 40 Q 15 25 0 10 Z"
         fill="white"
-        stroke="black"
-        strokeWidth={2}
-        cornerRadius={5}
-      />
-      
-      {/* Gate label */}
-      <Text
-        x={30}
-        y={20}
-        text="OR"
-        fontSize={14}
-        fontFamily="Arial"
-        fill="black"
+        stroke={isSelected ? "#ff6b35" : "black"}
+        strokeWidth={isSelected ? 3 : 2}
       />
       
       {/* Input pins */}
       <Circle
         x={-5}
-        y={15}
-        radius={5}
+        y={18}
+        radius={4}
         fill={inputs[0] ? '#4CAF50' : '#666'}
         stroke="black"
         strokeWidth={2}
@@ -67,8 +55,8 @@ const ORGate = ({ x, y, id, inputs = [false, false], output = false }) => {
       />
       <Circle
         x={-5}
-        y={35}
-        radius={5}
+        y={32}
+        radius={4}
         fill={inputs[1] ? '#4CAF50' : '#666'}
         stroke="black"
         strokeWidth={2}
@@ -77,9 +65,9 @@ const ORGate = ({ x, y, id, inputs = [false, false], output = false }) => {
       
       {/* Output pin */}
       <Circle
-        x={85}
+        x={45}
         y={25}
-        radius={5}
+        radius={4}
         fill={output ? '#4CAF50' : '#666'}
         stroke="black"
         strokeWidth={2}
