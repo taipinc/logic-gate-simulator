@@ -70,8 +70,8 @@ const ORGate = ({ x, y, id, inputs = [false, false], output = false }) => {
       {isSelected && (
         <Rect
           x={-10}
-          y={0}
-          width={75}
+          y={-5}
+          width={90}
           height={60}
           fill="rgba(255, 107, 53, 0.2)"
           stroke="#ff6b35"
@@ -81,9 +81,9 @@ const ORGate = ({ x, y, id, inputs = [false, false], output = false }) => {
         />
       )}
 
-      {/* OR Gate Symbol - curved shield shape (scaled up) */}
+      {/* OR Gate Symbol - curved input side, pointed output */}
       <Path
-        data="M 0 5 Q 25 5 50 25 Q 25 45 0 45 Q 18 25 0 5 Z"
+        data="M 5 5 Q 15 25 5 45 Q 30 45 50 25 Q 30 5 5 5 Z"
         fill="white"
         stroke={isSelected ? "#ff6b35" : "black"}
         strokeWidth={isSelected ? 3 : 2}
@@ -91,29 +91,30 @@ const ORGate = ({ x, y, id, inputs = [false, false], output = false }) => {
 
       {/* Gate label */}
       <Text
-        x={16}
-        y={20}
+        x={18}
+        y={18}
         text="OR"
-        fontSize={11}
+        fontSize={12}
         fontFamily="Arial"
         fill="black"
         fontStyle="bold"
+        listening={false}
       />
 
       {/* Input pins */}
       <Circle
-        x={-5}
-        y={18}
-        radius={4}
+        x={0}
+        y={15}
+        radius={5}
         fill={inputs[0] ? '#4CAF50' : '#666'}
         stroke="black"
         strokeWidth={2}
         onClick={(e) => handlePinClick(0, 'input', e)}
       />
       <Circle
-        x={-5}
-        y={32}
-        radius={4}
+        x={0}
+        y={35}
+        radius={5}
         fill={inputs[1] ? '#4CAF50' : '#666'}
         stroke="black"
         strokeWidth={2}
@@ -124,7 +125,7 @@ const ORGate = ({ x, y, id, inputs = [false, false], output = false }) => {
       <Circle
         x={55}
         y={25}
-        radius={4}
+        radius={5}
         fill={output ? '#4CAF50' : '#666'}
         stroke="black"
         strokeWidth={2}

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Group, Rect, Text, Circle } from 'react-konva';
+import { Group, Path, Circle, Text, Rect } from 'react-konva';
 import useSimulatorStore from '../../stores/simulatorStore';
 
 const XORGate = ({ x, y, id, inputs = [false, false], output = false }) => {
@@ -69,9 +69,9 @@ const XORGate = ({ x, y, id, inputs = [false, false], output = false }) => {
       {isSelected && (
         <Rect
           x={-10}
-          y={-10}
-          width={105}
-          height={70}
+          y={-5}
+          width={90}
+          height={60}
           fill="rgba(255, 107, 53, 0.2)"
           stroke="#ff6b35"
           strokeWidth={2}
@@ -80,31 +80,39 @@ const XORGate = ({ x, y, id, inputs = [false, false], output = false }) => {
         />
       )}
 
-      {/* Gate body */}
-      <Rect
-        x={0}
-        y={0}
-        width={80}
-        height={50}
+      {/* Extra input line (XOR distinguishing feature) - open curve */}
+      <Path
+        data="M 7 7 Q 14 25 7 43"
+        fill="none"
+        stroke={isSelected ? "#ff6b35" : "black"}
+        strokeWidth={isSelected ? 3 : 2}
+        listening={false}
+        lineCap="round"
+      />
+
+      {/* XOR Gate Symbol - same as OR but with double input line */}
+      <Path
+        data="M 10 5 Q 20 25 10 45 Q 35 45 55 25 Q 35 5 10 5 Z"
         fill="white"
         stroke={isSelected ? "#ff6b35" : "black"}
         strokeWidth={isSelected ? 3 : 2}
-        cornerRadius={5}
       />
-      
+
       {/* Gate label */}
       <Text
-        x={25}
-        y={20}
+        x={20}
+        y={18}
         text="XOR"
-        fontSize={14}
+        fontSize={12}
         fontFamily="Arial"
         fill="black"
+        fontStyle="bold"
+        listening={false}
       />
-      
+
       {/* Input pins */}
       <Circle
-        x={-5}
+        x={0}
         y={15}
         radius={5}
         fill={inputs[0] ? '#4CAF50' : '#666'}
@@ -113,7 +121,7 @@ const XORGate = ({ x, y, id, inputs = [false, false], output = false }) => {
         onClick={(e) => handlePinClick(0, 'input', e)}
       />
       <Circle
-        x={-5}
+        x={0}
         y={35}
         radius={5}
         fill={inputs[1] ? '#4CAF50' : '#666'}
@@ -121,10 +129,10 @@ const XORGate = ({ x, y, id, inputs = [false, false], output = false }) => {
         strokeWidth={2}
         onClick={(e) => handlePinClick(1, 'input', e)}
       />
-      
+
       {/* Output pin */}
       <Circle
-        x={85}
+        x={60}
         y={25}
         radius={5}
         fill={output ? '#4CAF50' : '#666'}

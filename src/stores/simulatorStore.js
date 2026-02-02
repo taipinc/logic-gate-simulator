@@ -494,42 +494,51 @@ const useSimulatorStore = create((set, get) => ({
       // Calculate pin positions more accurately
       let fromX, fromY, toX, toY;
 
-      // From pin (output)
+      // From pin (output) - matches gate component designs
       if (fromComp.type === 'INPUT') {
-        fromX = fromComp.x + 75; // Updated for resized component
+        fromX = fromComp.x + 75;
         fromY = fromComp.y + 25;
       } else if (fromComp.type === 'OUTPUT') {
-        fromX = fromComp.x + 75; // Updated for resized component
+        fromX = fromComp.x + 75;
         fromY = fromComp.y + 25;
       } else if (fromComp.type === 'BINARY_DISPLAY') {
         fromX = fromComp.x + 105;
         fromY = fromComp.y + 40;
       } else if (fromComp.type === 'AND') {
-        fromX = fromComp.x + 75; // Updated for resized gate
+        fromX = fromComp.x + 70;
         fromY = fromComp.y + 25;
       } else if (fromComp.type === 'OR') {
-        fromX = fromComp.x + 55; // Updated for resized gate
+        fromX = fromComp.x + 55;
+        fromY = fromComp.y + 25;
+      } else if (fromComp.type === 'XOR') {
+        fromX = fromComp.x + 60;
+        fromY = fromComp.y + 25;
+      } else if (fromComp.type === 'NOT') {
+        fromX = fromComp.x + 70;
         fromY = fromComp.y + 25;
       } else {
-        // XOR and other gates
-        fromX = fromComp.x + 85;
+        // Fallback for any other gate types
+        fromX = fromComp.x + 70;
         fromY = fromComp.y + 25;
       }
 
-      // To pin (input)
+      // To pin (input) - matches gate component designs
       if (toComp.type === 'BINARY_DISPLAY') {
         toX = toComp.x + 0;
         toY = toComp.y + 75 + (conn.toPin * 15);
-      } else {
+      } else if (toComp.type === 'NOT') {
+        toX = toComp.x + 0;
+        toY = toComp.y + 25;
+      } else if (toComp.type === 'OUTPUT') {
         toX = toComp.x - 5;
-        if (toComp.type === 'NOT') {
-          toY = toComp.y + 25; // Single input
-        } else if (toComp.type === 'OUTPUT') {
-          toY = toComp.y + 25; // Updated for resized component
-        } else {
-          // AND/OR gate inputs
-          toY = toComp.y + (conn.toPin === 0 ? 18 : 32);
-        }
+        toY = toComp.y + 25;
+      } else if (toComp.type === 'XOR') {
+        toX = toComp.x + 0;
+        toY = toComp.y + (conn.toPin === 0 ? 15 : 35);
+      } else {
+        // AND/OR gate inputs
+        toX = toComp.x + 0;
+        toY = toComp.y + (conn.toPin === 0 ? 15 : 35);
       }
 
       return {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Group, Rect, Text, Circle } from 'react-konva';
+import { Group, Path, Circle, Text, Rect } from 'react-konva';
 import useSimulatorStore from '../../stores/simulatorStore';
 
 const NOTGate = ({ x, y, id, inputs = [false], output = false }) => {
@@ -69,9 +69,9 @@ const NOTGate = ({ x, y, id, inputs = [false], output = false }) => {
       {isSelected && (
         <Rect
           x={-10}
-          y={-10}
-          width={105}
-          height={70}
+          y={-5}
+          width={90}
+          height={60}
           fill="rgba(255, 107, 53, 0.2)"
           stroke="#ff6b35"
           strokeWidth={2}
@@ -80,31 +80,40 @@ const NOTGate = ({ x, y, id, inputs = [false], output = false }) => {
         />
       )}
 
-      {/* Gate body */}
-      <Rect
-        x={0}
-        y={0}
-        width={80}
-        height={50}
+      {/* NOT Gate Symbol - Triangle (inverter) */}
+      <Path
+        data="M 5 5 L 55 25 L 5 45 Z"
         fill="white"
         stroke={isSelected ? "#ff6b35" : "black"}
         strokeWidth={isSelected ? 3 : 2}
-        cornerRadius={5}
       />
-      
+
       {/* Gate label */}
       <Text
-        x={25}
-        y={20}
+        x={14}
+        y={18}
         text="NOT"
-        fontSize={14}
+        fontSize={11}
         fontFamily="Arial"
         fill="black"
+        fontStyle="bold"
+        listening={false}
       />
-      
+
+      {/* Inversion bubble (decorative NOT symbol) */}
+      <Circle
+        x={60}
+        y={25}
+        radius={5}
+        fill="white"
+        stroke={isSelected ? "#ff6b35" : "black"}
+        strokeWidth={isSelected ? 3 : 2}
+        listening={false}
+      />
+
       {/* Input pin */}
       <Circle
-        x={-5}
+        x={0}
         y={25}
         radius={5}
         fill={inputs[0] ? '#4CAF50' : '#666'}
@@ -112,24 +121,16 @@ const NOTGate = ({ x, y, id, inputs = [false], output = false }) => {
         strokeWidth={2}
         onClick={(e) => handlePinClick(0, 'input', e)}
       />
-      
-      {/* Output pin with inversion bubble */}
+
+      {/* Output pin */}
       <Circle
-        x={85}
+        x={70}
         y={25}
         radius={5}
         fill={output ? '#4CAF50' : '#666'}
         stroke="black"
         strokeWidth={2}
         onClick={(e) => handlePinClick(0, 'output', e)}
-      />
-      <Circle
-        x={88}
-        y={25}
-        radius={6}
-        fill="white"
-        stroke="black"
-        strokeWidth={1}
       />
 
       {/* Delete button */}

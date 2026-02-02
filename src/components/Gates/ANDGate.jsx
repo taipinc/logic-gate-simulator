@@ -72,8 +72,8 @@ const ANDGate = ({ x, y, id, inputs = [false, false], output = false }) => {
       {isSelected && (
         <Rect
           x={-10}
-          y={0}
-          width={95}
+          y={-5}
+          width={100}
           height={60}
           fill="rgba(255, 107, 53, 0.2)"
           stroke="#ff6b35"
@@ -83,9 +83,9 @@ const ANDGate = ({ x, y, id, inputs = [false, false], output = false }) => {
         />
       )}
 
-      {/* AND Gate Symbol - D-shaped with flat left side (scaled up) */}
+      {/* AND Gate Symbol - D-shaped with flat left side and rounded right */}
       <Path
-        data="M 0 5 L 50 5 A 25 25 0 0 1 50 45 L 0 45 Z"
+        data="M 5 5 L 40 5 Q 65 5 65 25 Q 65 45 40 45 L 5 45 Z"
         fill="white"
         stroke={isSelected ? "#ff6b35" : "black"}
         strokeWidth={isSelected ? 3 : 2}
@@ -93,29 +93,30 @@ const ANDGate = ({ x, y, id, inputs = [false, false], output = false }) => {
 
       {/* Gate label */}
       <Text
-        x={12}
-        y={20}
+        x={18}
+        y={18}
         text="AND"
-        fontSize={11}
+        fontSize={12}
         fontFamily="Arial"
         fill="black"
         fontStyle="bold"
+        listening={false}
       />
 
       {/* Input pins */}
       <Circle
-        x={-5}
-        y={18}
-        radius={4}
+        x={0}
+        y={15}
+        radius={5}
         fill={inputs[0] ? '#4CAF50' : '#666'}
         stroke="black"
         strokeWidth={2}
         onClick={(e) => handlePinClick(0, 'input', e)}
       />
       <Circle
-        x={-5}
-        y={32}
-        radius={4}
+        x={0}
+        y={35}
+        radius={5}
         fill={inputs[1] ? '#4CAF50' : '#666'}
         stroke="black"
         strokeWidth={2}
@@ -124,9 +125,9 @@ const ANDGate = ({ x, y, id, inputs = [false, false], output = false }) => {
 
       {/* Output pin */}
       <Circle
-        x={75}
+        x={70}
         y={25}
-        radius={4}
+        radius={5}
         fill={output ? '#4CAF50' : '#666'}
         stroke="black"
         strokeWidth={2}
