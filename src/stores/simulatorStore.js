@@ -13,7 +13,8 @@ const useSimulatorStore = create((set, get) => ({
   
   nextId: 5,
   nextConnectionId: 1,
-  
+  nextComponentOffset: 0,
+
   // Wire drawing state
   isDrawingWire: false,
   wireStart: null,
@@ -23,6 +24,12 @@ const useSimulatorStore = create((set, get) => ({
   selectedComponents: [],
   isSelecting: false,
   selectionBox: null,
+
+  // Pan state
+  isPanning: false,
+  panStart: null,
+  stagePosition: { x: 0, y: 0 },
+  stageScale: 1,
 
   // Actions
   addComponent: (type) => {
@@ -43,18 +50,20 @@ const useSimulatorStore = create((set, get) => ({
         break;
     }
 
+    const offset = get().nextComponentOffset;
     const newComponent = {
       id: get().nextId,
       type,
-      x: window.innerWidth / 2 - 40,
-      y: window.innerHeight / 2 - 25,
+      x: window.innerWidth / 2 - 40 + (offset * 20),
+      y: window.innerHeight / 2 - 25 + (offset * 20),
       inputs,
       output: false
     };
-    
+
     set(state => ({
       components: [...state.components, newComponent],
-      nextId: state.nextId + 1
+      nextId: state.nextId + 1,
+      nextComponentOffset: (state.nextComponentOffset + 1) % 10
     }));
   },
 
@@ -204,6 +213,22 @@ const useSimulatorStore = create((set, get) => ({
     get().calculateLogic();
   },
 
+  removeComponent: (componentId) => {
+    set(state => ({
+      connections: state.connections.filter(conn =>
+        conn.fromComponent !== componentId && conn.toComponent !== componentId
+      ),
+      components: state.components.filter(comp => comp.id !== componentId),
+      selectedComponents: state.selectedComponents.filter(id => id !== componentId)
+    }));
+    get().calculateLogic();
+  },
+
+  removeSelectedComponents: () => {
+    const { selectedComponents } = get();
+    selectedComponents.forEach(id => get().removeComponent(id));
+  },
+
   updateInputValue: (componentId, value) => {
     set(state => ({
       components: state.components.map(comp =>
@@ -211,6 +236,163 @@ const useSimulatorStore = create((set, get) => ({
       )
     }));
     get().calculateLogic();
+  },
+
+  clearAll: () => {
+    set({
+      components: [],
+      connections: [],
+      wires: [],
+      selectedComponents: [],
+      isDrawingWire: false,
+      wireStart: null,
+      tempWire: null,
+      isSelecting: false,
+      selectionBox: null
+    });
+  },
+
+  startPanning: (x, y) => {
+    const { stagePosition } = get();
+    set({
+      isPanning: true,
+      panStart: { x: x - stagePosition.x, y: y - stagePosition.y }
+    });
+  },
+
+  updatePanning: (x, y) => {
+    const { panStart } = get();
+    if (panStart) {
+      set({ stagePosition: { x: x - panStart.x, y: y - panStart.y } });
+    }
+  },
+
+  finishPanning: () => {
+    set({ isPanning: false, panStart: null });
+  },
+
+  selectAllComponents: () => {
+    const { components } = get();
+    set({ selectedComponents: components.map(c => c.id) });
+  },
+
+  duplicateSelectedComponents: () => {
+    const { selectedComponents, components, connections, nextId, nextConnectionId } = get();
+
+    if (selectedComponents.length === 0) return;
+
+    // Map old IDs to new IDs
+    const idMap = {};
+    let currentNextId = nextId;
+
+    // Create duplicate components (offset 50px down)
+    const duplicates = selectedComponents.map(id => {
+      const original = components.find(c => c.id === id);
+      if (!original) return null;
+
+      const newId = currentNextId++;
+      idMap[id] = newId;
+
+      return {
+        ...original,
+        id: newId,
+        y: original.y + 50  // Place 50px below
+      };
+    }).filter(Boolean);
+
+    // Create duplicate connections (only for internal connections within selected components)
+    const duplicateConnections = [];
+    let currentConnectionId = nextConnectionId;
+
+    connections.forEach(conn => {
+      const fromSelected = selectedComponents.includes(conn.fromComponent);
+      const toSelected = selectedComponents.includes(conn.toComponent);
+
+      // Only duplicate if both endpoints are in the selection
+      if (fromSelected && toSelected) {
+        duplicateConnections.push({
+          ...conn,
+          id: currentConnectionId++,
+          fromComponent: idMap[conn.fromComponent],
+          toComponent: idMap[conn.toComponent]
+        });
+      }
+    });
+
+    set(state => ({
+      components: [...state.components, ...duplicates],
+      connections: [...state.connections, ...duplicateConnections],
+      nextId: currentNextId,
+      nextConnectionId: currentConnectionId,
+      selectedComponents: duplicates.map(c => c.id)  // Select the new duplicates
+    }));
+
+    get().calculateLogic();
+  },
+
+  saveCircuit: (name) => {
+    const { components, connections } = get();
+    const circuit = {
+      name,
+      timestamp: Date.now(),
+      components,
+      connections
+    };
+
+    const savedCircuits = JSON.parse(localStorage.getItem('savedCircuits') || '[]');
+    savedCircuits.push(circuit);
+    localStorage.setItem('savedCircuits', JSON.stringify(savedCircuits));
+
+    return circuit.timestamp;
+  },
+
+  loadCircuit: (circuit) => {
+    set({
+      components: circuit.components,
+      connections: circuit.connections,
+      selectedComponents: [],
+      isDrawingWire: false,
+      wireStart: null,
+      tempWire: null
+    });
+    get().calculateLogic();
+  },
+
+  getSavedCircuits: () => {
+    return JSON.parse(localStorage.getItem('savedCircuits') || '[]');
+  },
+
+  deleteCircuit: (timestamp) => {
+    const savedCircuits = JSON.parse(localStorage.getItem('savedCircuits') || '[]');
+    const filtered = savedCircuits.filter(c => c.timestamp !== timestamp);
+    localStorage.setItem('savedCircuits', JSON.stringify(filtered));
+  },
+
+  exportToJSON: () => {
+    const { components, connections } = get();
+    return JSON.stringify({ components, connections }, null, 2);
+  },
+
+  importFromJSON: (jsonString) => {
+    try {
+      const data = JSON.parse(jsonString);
+      if (data.components && data.connections) {
+        set({
+          components: data.components,
+          connections: data.connections,
+          selectedComponents: [],
+          isDrawingWire: false,
+          wireStart: null,
+          tempWire: null
+        });
+        get().calculateLogic();
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('Invalid JSON:', error);
+      return false;
+    }
   },
 
   calculateLogic: () => {
@@ -309,29 +491,39 @@ const useSimulatorStore = create((set, get) => ({
 
       // From pin (output)
       if (fromComp.type === 'INPUT') {
-        fromX = fromComp.x + 65;
-        fromY = fromComp.y + 20;
+        fromX = fromComp.x + 75; // Updated for resized component
+        fromY = fromComp.y + 25;
+      } else if (fromComp.type === 'OUTPUT') {
+        fromX = fromComp.x + 75; // Updated for resized component
+        fromY = fromComp.y + 25;
       } else if (fromComp.type === 'BINARY_DISPLAY') {
         fromX = fromComp.x + 105;
         fromY = fromComp.y + 40;
-      } else if (fromComp.type === 'OUTPUT') {
-        fromX = fromComp.x + 65;
-        fromY = fromComp.y + 20;
+      } else if (fromComp.type === 'AND') {
+        fromX = fromComp.x + 75; // Updated for resized gate
+        fromY = fromComp.y + 25;
+      } else if (fromComp.type === 'OR') {
+        fromX = fromComp.x + 55; // Updated for resized gate
+        fromY = fromComp.y + 25;
       } else {
+        // XOR and other gates
         fromX = fromComp.x + 85;
         fromY = fromComp.y + 25;
       }
 
       // To pin (input)
       if (toComp.type === 'BINARY_DISPLAY') {
-        toX = toComp.x + 10; // Bottom row pins
+        toX = toComp.x + 0;
         toY = toComp.y + 75 + (conn.toPin * 15);
       } else {
         toX = toComp.x - 5;
-        if (toComp.type === 'NOT' || toComp.type === 'OUTPUT') {
+        if (toComp.type === 'NOT') {
           toY = toComp.y + 25; // Single input
+        } else if (toComp.type === 'OUTPUT') {
+          toY = toComp.y + 25; // Updated for resized component
         } else {
-          toY = toComp.y + (conn.toPin === 0 ? 15 : 35); // Dual inputs
+          // AND/OR gate inputs
+          toY = toComp.y + (conn.toPin === 0 ? 18 : 32);
         }
       }
 
