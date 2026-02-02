@@ -67,13 +67,7 @@ const BinaryDisplay = ({ x, y, id, inputs = [false, false, false, false, false, 
     return decimal;
   };
 
-  // Create binary string for display (MSB first)
-  const getBinaryString = () => {
-    return inputs.slice().reverse().map(bit => bit ? '1' : '0').join('');
-  };
-
   const decimalValue = calculateDecimal();
-  // const binaryString = getBinaryString(); // Unused for now, could be displayed later
 
   return (
     <Group

@@ -411,10 +411,11 @@ const useSimulatorStore = create((set, get) => ({
       }));
 
       // Apply connections
+      // eslint-disable-next-line no-loop-func
       connections.forEach(conn => {
         const fromComp = updatedComponents.find(c => c.id === conn.fromComponent);
         const toCompIndex = updatedComponents.findIndex(c => c.id === conn.toComponent);
-        
+
         if (fromComp && toCompIndex !== -1 && updatedComponents[toCompIndex].inputs) {
           updatedComponents[toCompIndex].inputs[conn.toPin] = fromComp.output;
         }
@@ -443,6 +444,10 @@ const useSimulatorStore = create((set, get) => ({
             break;
           case 'BINARY_DISPLAY':
             // Binary display doesn't change its output based on inputs
+            output = comp.output;
+            break;
+          default:
+            // Unknown component type - preserve existing output
             output = comp.output;
             break;
         }
