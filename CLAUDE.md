@@ -21,6 +21,20 @@ npm test           # Interactive test runner (watch mode)
 npm run build      # Production build to build/ folder
 ```
 
+## Deployment
+
+The project automatically deploys to GitHub Pages on every commit to the main branch via GitHub Actions (`.github/workflows/deploy.yml`).
+
+- **Live URL**: https://taipinc.github.io/logic-gate-simulator
+- **Homepage setting**: The `package.json` includes a `homepage` field configured for GitHub Pages deployment
+- **Workflow**: Builds the React app and deploys the `build/` folder to GitHub Pages
+
+To deploy manually:
+```bash
+npm run build      # Creates production build
+# Then push to main branch to trigger automatic deployment
+```
+
 ## Architecture
 
 ### State Management (Zustand)

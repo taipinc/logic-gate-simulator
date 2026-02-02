@@ -1,70 +1,101 @@
-# Getting Started with Create React App
+# Logic Gate Simulator
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A visual, interactive digital logic circuit simulator built with React. Create logic circuits by dragging and dropping gates, connecting them with wires, and watching the signals propagate in real-time.
 
-## Available Scripts
+## Live Demo
 
-In the project directory, you can run:
+**[Try it live on GitHub Pages](https://taipinc.github.io/logic-gate-simulator)**
 
-### `npm start`
+## Features
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- **Interactive Canvas**: Drag-and-drop logic gates onto an infinite canvas
+- **Logic Gates**: AND, OR, NOT, XOR gates with visual feedback
+- **I/O Components**: Toggle input switches, output indicators, and 8-bit binary displays
+- **Visual Wiring**: Draw connections between components with animated bezier curves
+- **Real-time Simulation**: See signal propagation with color-coded active/inactive states
+- **Multi-select**: Select and move multiple components at once
+- **Clean Architecture**: Built with modern React patterns and centralized state management
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Getting Started
 
-### `npm test`
+### Prerequisites
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- Node.js 20 or higher
+- npm
 
-### `npm run build`
+### Installation
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```bash
+# Clone the repository
+git clone https://github.com/taipinc/logic-gate-simulator.git
+cd logic-gate-simulator
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+# Install dependencies
+npm install
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+# Start development server
+npm start
+```
 
-### `npm run eject`
+The app will open at [http://localhost:3000](http://localhost:3000).
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### Available Scripts
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```bash
+npm start          # Development server with hot reload
+npm test           # Run tests in interactive watch mode
+npm run build      # Create production build in build/ folder
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## How to Use
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+1. **Add Components**: Click gates from the toolbar to add them to the canvas
+2. **Connect Wires**: Click an output pin (right side of gate), then click an input pin (left side) to create a connection
+3. **Toggle Inputs**: Click INPUT switches to change their state
+4. **Move Components**: Drag gates and components to rearrange your circuit
+5. **Delete Wires**: Click on a wire to remove the connection
+6. **Multi-select**: Click and drag on empty canvas to select multiple components
 
-## Learn More
+## Technology Stack
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+- **React 19** - UI framework with functional components and hooks
+- **Konva/react-konva** - Canvas-based rendering and drag-and-drop
+- **Zustand** - Lightweight state management
+- **Create React App** - Build tooling and development server
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Project Structure
 
-### Code Splitting
+```
+src/
+├── components/
+│   ├── Gates/           # Logic gate implementations (AND, OR, NOT, XOR)
+│   ├── IO/              # Input switches, outputs, binary displays
+│   ├── Wires/           # Wire rendering with bezier curves
+│   ├── Canvas/          # Main canvas component
+│   └── UI/              # Toolbar and gate library
+├── stores/
+│   └── simulatorStore.js # Zustand store with circuit state and logic
+├── App.js               # Root component
+└── index.js             # Entry point
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## Architecture Highlights
 
-### Analyzing the Bundle Size
+- **Centralized State**: All circuit state managed by a single Zustand store
+- **Multi-pass Logic Propagation**: Handles complex circuits with feedback loops
+- **Component-based Design**: Each gate type is a self-contained React component
+- **Pin Position Calculations**: Wire endpoints calculated dynamically based on component positions
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+See [CLAUDE.md](./CLAUDE.md) for detailed architecture documentation.
 
-### Making a Progressive Web App
+## Deployment
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+The project automatically deploys to GitHub Pages on every push to the main branch via GitHub Actions.
 
-### Advanced Configuration
+## Contributing
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+This is an educational project. Feel free to fork and experiment!
 
-### Deployment
+## License
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+MIT License - feel free to use this for learning and teaching purposes.
