@@ -45,8 +45,13 @@ function App() {
     finishPanning,
     selectAllComponents,
     moveSelectedComponents,
-    duplicateSelectedComponents
+    duplicateSelectedComponents,
+    calculateLogic
   } = useSimulatorStore();
+
+  useEffect(() => {
+    calculateLogic();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     const handleResize = () => {
