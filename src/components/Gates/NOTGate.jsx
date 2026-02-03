@@ -3,7 +3,7 @@ import { Group, Path, Circle, Text, Rect } from 'react-konva';
 import useSimulatorStore from '../../stores/simulatorStore';
 
 const NOTGate = ({ x, y, id, inputs = [false], output = false }) => {
-  const { updateComponentPosition, startWireDrawing, finishWireDrawing, isDrawingWire, removeComponent, selectedComponents, moveSelectedComponents, stagePosition } = useSimulatorStore();
+  const { updateComponentPosition, startWireDrawing, finishWireDrawing, isDrawingWire, removeComponent, selectedComponents, moveSelectedComponents, stagePosition, stageScale } = useSimulatorStore();
   const [lastPos, setLastPos] = React.useState({ x, y });
   const isSelected = selectedComponents.includes(id);
 
@@ -41,9 +41,9 @@ const NOTGate = ({ x, y, id, inputs = [false], output = false }) => {
     const stage = e.target.getStage();
     const pointerPos = stage.getPointerPosition();
 
-    // Account for stage position offset
-    const adjustedX = pointerPos.x - stagePosition.x;
-    const adjustedY = pointerPos.y - stagePosition.y;
+    // Account for stage position offset and scale
+    const adjustedX = (pointerPos.x - stagePosition.x) / stageScale;
+    const adjustedY = (pointerPos.y - stagePosition.y) / stageScale;
 
     if (isDrawingWire) {
       if (pinType === 'input') {

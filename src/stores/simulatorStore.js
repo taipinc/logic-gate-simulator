@@ -2,8 +2,8 @@ import { create } from 'zustand';
 
 const useSimulatorStore = create((set, get) => ({
   components: [
-    { id: 5, type: 'BINARY_DISPLAY', x: 150, y: 761, inputs: [false, false, false, false, false, false, false, false], output: false },
-    { id: 6, type: 'BINARY_DISPLAY', x: 333, y: 761, inputs: [false, false, false, false, false, false, false, false], output: false },
+    { id: 5, type: 'BINARY_DISPLAY', x: 150, y: 800, inputs: [false, false, false, false, false, false, false, false], output: false },
+    { id: 6, type: 'BINARY_DISPLAY', x: 333, y: 800, inputs: [false, false, false, false, false, false, false, false], output: false },
     { id: 7, type: 'BINARY_DISPLAY', x: 1126, y: 250, inputs: [false, false, false, false, false, false, false, false], output: false },
     { id: 8, type: 'OUTPUT', x: 875, y: 60, inputs: [false], output: false },
     { id: 9, type: 'OUTPUT', x: 875, y: 240, inputs: [false], output: false },
@@ -17,23 +17,23 @@ const useSimulatorStore = create((set, get) => ({
     { id: 17, type: 'INPUT', x: 28, y: 480, inputs: [], output: false },
     { id: 18, type: 'INPUT', x: 28, y: 280, inputs: [], output: false },
     { id: 19, type: 'INPUT', x: 28, y: 80, inputs: [], output: false },
-    { id: 20, type: 'XOR', x: 459, y: 64, inputs: [false, false], output: false },
-    { id: 21, type: 'AND', x: 456, y: 128, inputs: [false, false], output: false },
-    { id: 22, type: 'XOR', x: 397, y: 264, inputs: [false, false], output: false },
-    { id: 23, type: 'XOR', x: 539, y: 233, inputs: [false, false], output: false },
-    { id: 24, type: 'AND', x: 544, y: 371, inputs: [false, false], output: false },
-    { id: 25, type: 'AND', x: 545, y: 314, inputs: [false, false], output: false },
+    { id: 20, type: 'XOR', x: 540, y: 64, inputs: [false, false], output: false },
+    { id: 21, type: 'AND', x: 540, y: 128, inputs: [false, false], output: false },
+    { id: 22, type: 'XOR', x: 400, y: 264, inputs: [false, false], output: false },
+    { id: 23, type: 'XOR', x: 540, y: 233, inputs: [false, false], output: false },
+    { id: 24, type: 'AND', x: 540, y: 371, inputs: [false, false], output: false },
+    { id: 25, type: 'AND', x: 540, y: 314, inputs: [false, false], output: false },
     { id: 26, type: 'OR', x: 650, y: 343, inputs: [false, false], output: false },
-    { id: 27, type: 'XOR', x: 405, y: 500, inputs: [false, false], output: false },
-    { id: 28, type: 'XOR', x: 547, y: 469, inputs: [false, false], output: false },
-    { id: 29, type: 'AND', x: 552, y: 607, inputs: [false, false], output: false },
-    { id: 30, type: 'AND', x: 553, y: 550, inputs: [false, false], output: false },
-    { id: 31, type: 'OR', x: 658, y: 579, inputs: [false, false], output: false },
-    { id: 32, type: 'XOR', x: 470, y: 718, inputs: [false, false], output: false },
-    { id: 33, type: 'XOR', x: 612, y: 687, inputs: [false, false], output: false },
-    { id: 34, type: 'AND', x: 617, y: 825, inputs: [false, false], output: false },
-    { id: 35, type: 'AND', x: 618, y: 768, inputs: [false, false], output: false },
-    { id: 36, type: 'OR', x: 723, y: 797, inputs: [false, false], output: false },
+    { id: 27, type: 'XOR', x: 400, y: 500, inputs: [false, false], output: false },
+    { id: 28, type: 'XOR', x: 540, y: 469, inputs: [false, false], output: false },
+    { id: 29, type: 'AND', x: 540, y: 607, inputs: [false, false], output: false },
+    { id: 30, type: 'AND', x: 540, y: 550, inputs: [false, false], output: false },
+    { id: 31, type: 'OR', x: 650, y: 579, inputs: [false, false], output: false },
+    { id: 32, type: 'XOR', x: 400, y: 718, inputs: [false, false], output: false },
+    { id: 33, type: 'XOR', x: 540, y: 687, inputs: [false, false], output: false },
+    { id: 34, type: 'AND', x: 540, y: 825, inputs: [false, false], output: false },
+    { id: 35, type: 'AND', x: 540, y: 768, inputs: [false, false], output: false },
+    { id: 36, type: 'OR', x: 650, y: 797, inputs: [false, false], output: false },
     { id: 37, type: 'OUTPUT', x: 875, y: 824, inputs: [false], output: false }
   ],
 
@@ -351,6 +351,10 @@ const useSimulatorStore = create((set, get) => ({
 
   finishPanning: () => {
     set({ isPanning: false, panStart: null });
+  },
+
+  setZoom: (scale, x, y) => {
+    set({ stageScale: scale, stagePosition: { x, y } });
   },
 
   selectAllComponents: () => {

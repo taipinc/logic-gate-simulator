@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Stage, Layer, Rect, Text } from 'react-konva';
+import { Stage, Layer, Group, Rect, Text } from 'react-konva';
 import ANDGate from './components/Gates/ANDGate';
 import ORGate from './components/Gates/ORGate';
 import NOTGate from './components/Gates/NOTGate';
@@ -46,11 +46,40 @@ function App() {
     selectAllComponents,
     moveSelectedComponents,
     duplicateSelectedComponents,
-    calculateLogic
+    calculateLogic,
+    stageScale,
+    setZoom
   } = useSimulatorStore();
 
   useEffect(() => {
     calculateLogic();
+
+    // Fit default layout to viewport on initial load only
+    if (components.length > 0) {
+      const padding = 60;
+      const defaultSize = { w: 80, h: 55 };
+      const sizeMap = { BINARY_DISPLAY: { w: 110, h: 210 } };
+
+      let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+      components.forEach(c => {
+        const size = sizeMap[c.type] || defaultSize;
+        minX = Math.min(minX, c.x);
+        maxX = Math.max(maxX, c.x + size.w);
+        minY = Math.min(minY, c.y);
+        maxY = Math.max(maxY, c.y + size.h);
+      });
+
+      const bboxW = maxX - minX;
+      const bboxH = maxY - minY;
+      const scale = Math.min(
+        (dimensions.width - padding * 2) / bboxW,
+        (dimensions.height - padding * 2) / bboxH,
+        1
+      );
+      const offsetX = (dimensions.width - bboxW * scale) / 2 - minX * scale;
+      const offsetY = (dimensions.height - bboxH * scale) / 2 - minY * scale;
+      setZoom(scale, offsetX, offsetY);
+    }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
@@ -123,6 +152,24 @@ function App() {
   }, [selectedComponents, removeSelectedComponents, cancelWireDrawing, cancelSelection,
       selectAllComponents, moveSelectedComponents, isSpacePressed, isPanning, finishPanning]);
 
+  const ZOOM_FACTOR = 1.2;
+  const MIN_ZOOM = 0.1;
+  const MAX_ZOOM = 5;
+
+  const handleZoomIn = () => {
+    const newScale = Math.min(stageScale * ZOOM_FACTOR, MAX_ZOOM);
+    const cx = dimensions.width / 2;
+    const cy = dimensions.height / 2;
+    setZoom(newScale, cx - (cx - stagePosition.x) * (newScale / stageScale), cy - (cy - stagePosition.y) * (newScale / stageScale));
+  };
+
+  const handleZoomOut = () => {
+    const newScale = Math.max(stageScale / ZOOM_FACTOR, MIN_ZOOM);
+    const cx = dimensions.width / 2;
+    const cy = dimensions.height / 2;
+    setZoom(newScale, cx - (cx - stagePosition.x) * (newScale / stageScale), cy - (cy - stagePosition.y) * (newScale / stageScale));
+  };
+
   const handleStageMouseDown = (e) => {
     const pos = e.target.getStage().getPointerPosition();
 
@@ -136,9 +183,9 @@ function App() {
     // Don't start selection if clicking on a component or if drawing wire
     if (e.target !== e.target.getStage() || isDrawingWire) return;
 
-    // Account for stage position offset
-    const adjustedX = pos.x - stagePosition.x;
-    const adjustedY = pos.y - stagePosition.y;
+    // Account for stage position offset and scale
+    const adjustedX = (pos.x - stagePosition.x) / stageScale;
+    const adjustedY = (pos.y - stagePosition.y) / stageScale;
     startSelection(adjustedX, adjustedY);
   };
 
@@ -148,14 +195,14 @@ function App() {
     if (isPanning) {
       updatePanning(pos.x, pos.y);
     } else if (isDrawingWire) {
-      // Account for stage position offset
-      const adjustedX = pos.x - stagePosition.x;
-      const adjustedY = pos.y - stagePosition.y;
+      // Account for stage position offset and scale
+      const adjustedX = (pos.x - stagePosition.x) / stageScale;
+      const adjustedY = (pos.y - stagePosition.y) / stageScale;
       updateTempWire(adjustedX, adjustedY);
     } else if (isSelecting) {
-      // Account for stage position offset
-      const adjustedX = pos.x - stagePosition.x;
-      const adjustedY = pos.y - stagePosition.y;
+      // Account for stage position offset and scale
+      const adjustedX = (pos.x - stagePosition.x) / stageScale;
+      const adjustedY = (pos.y - stagePosition.y) / stageScale;
       updateSelection(adjustedX, adjustedY);
     }
   };
@@ -235,6 +282,10 @@ function App() {
       <Toolbar onAddComponent={addComponent} onClear={clearAll} />
       <HelpPanel />
       <SaveLoadPanel />
+      <div className="zoom-controls">
+        <button className="zoom-btn" onClick={handleZoomIn}>+</button>
+        <button className="zoom-btn" onClick={handleZoomOut}>−</button>
+      </div>
       <Stage
         width={dimensions.width}
         height={dimensions.height}
@@ -253,23 +304,25 @@ function App() {
         onClick={handleStageClick}
       >
         <Layer>
-          {/* Render permanent wires */}
-          {wires.map(wire => (
-            <Wire key={wire.id} {...wire} />
-          ))}
-          
-          {/* Render temporary wire while drawing */}
-          {tempWire && (
-            <Wire {...tempWire} isActive={false} />
-          )}
-          
-          {/* Render components */}
-          {components.map(renderComponent)}
+          <Group scaleX={stageScale} scaleY={stageScale}>
+            {/* Render permanent wires */}
+            {wires.map(wire => (
+              <Wire key={wire.id} {...wire} />
+            ))}
 
-          {/* Render selection box */}
-          {renderSelectionBox()}
+            {/* Render temporary wire while drawing */}
+            {tempWire && (
+              <Wire {...tempWire} isActive={false} />
+            )}
 
-          {/* Wire drawing feedback */}
+            {/* Render components */}
+            {components.map(renderComponent)}
+
+            {/* Render selection box */}
+            {renderSelectionBox()}
+          </Group>
+
+          {/* Wire drawing feedback — fixed to viewport */}
           {isDrawingWire && (
             <>
               <Rect

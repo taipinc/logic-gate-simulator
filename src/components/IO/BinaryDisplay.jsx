@@ -3,7 +3,7 @@ import { Group, Rect, Text, Circle } from 'react-konva';
 import useSimulatorStore from '../../stores/simulatorStore';
 
 const BinaryDisplay = ({ x, y, id, inputs = [false, false, false, false, false, false, false, false], output = false }) => {
-  const { updateComponentPosition, finishWireDrawing, startWireDrawing, isDrawingWire, removeComponent, selectedComponents, moveSelectedComponents, stagePosition } = useSimulatorStore();
+  const { updateComponentPosition, finishWireDrawing, startWireDrawing, isDrawingWire, removeComponent, selectedComponents, moveSelectedComponents, stagePosition, stageScale } = useSimulatorStore();
   const [lastPos, setLastPos] = React.useState({ x, y });
   const isSelected = selectedComponents.includes(id);
 
@@ -41,9 +41,9 @@ const BinaryDisplay = ({ x, y, id, inputs = [false, false, false, false, false, 
     const stage = e.target.getStage();
     const pointerPos = stage.getPointerPosition();
 
-    // Account for stage position offset
-    const adjustedX = pointerPos.x - stagePosition.x;
-    const adjustedY = pointerPos.y - stagePosition.y;
+    // Account for stage position offset and scale
+    const adjustedX = (pointerPos.x - stagePosition.x) / stageScale;
+    const adjustedY = (pointerPos.y - stagePosition.y) / stageScale;
 
     if (isDrawingWire) {
       if (pinType === 'input') {
@@ -121,9 +121,9 @@ const BinaryDisplay = ({ x, y, id, inputs = [false, false, false, false, false, 
       {/* Decimal display */}
       <Rect
         x={10}
-        y={25}
+        y={20}
         width={80}
-        height={25}
+        height={50}
         fill="#222"
         stroke="black"
         strokeWidth={1}
@@ -131,14 +131,14 @@ const BinaryDisplay = ({ x, y, id, inputs = [false, false, false, false, false, 
       />
 
       <Text
-        x={20}
-        y={30}
+        x={10}
+        y={29}
         text={decimalValue.toString()}
-        fontSize={16}
+        fontSize={32}
         fontFamily="Arial"
         fill="#00ff41"
         align="center"
-        width={100}
+        width={80}
         fontStyle="bold"
       />
       

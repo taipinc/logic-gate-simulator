@@ -3,7 +3,7 @@ import { Group, Rect, Text, Circle } from 'react-konva';
 import useSimulatorStore from '../../stores/simulatorStore';
 
 const InputSwitch = ({ x, y, id, output = false }) => {
-  const { updateComponentPosition, updateInputValue, startWireDrawing, isDrawingWire, removeComponent, selectedComponents, moveSelectedComponents, stagePosition } = useSimulatorStore();
+  const { updateComponentPosition, updateInputValue, startWireDrawing, isDrawingWire, removeComponent, selectedComponents, moveSelectedComponents, stagePosition, stageScale } = useSimulatorStore();
   const [lastPos, setLastPos] = React.useState({ x, y });
   const isSelected = selectedComponents.includes(id);
 
@@ -45,9 +45,9 @@ const InputSwitch = ({ x, y, id, output = false }) => {
     const stage = e.target.getStage();
     const pointerPos = stage.getPointerPosition();
 
-    // Account for stage position offset
-    const adjustedX = pointerPos.x - stagePosition.x;
-    const adjustedY = pointerPos.y - stagePosition.y;
+    // Account for stage position offset and scale
+    const adjustedX = (pointerPos.x - stagePosition.x) / stageScale;
+    const adjustedY = (pointerPos.y - stagePosition.y) / stageScale;
 
     if (!isDrawingWire && pinType === 'output') {
       startWireDrawing(id, pinIndex, pinType, adjustedX, adjustedY);
