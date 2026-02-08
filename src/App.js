@@ -1,23 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import { Stage, Layer, Group, Rect, Text } from 'react-konva';
-import ANDGate from './components/Gates/ANDGate';
-import ORGate from './components/Gates/ORGate';
-import NOTGate from './components/Gates/NOTGate';
-import XORGate from './components/Gates/XORGate';
-import InputSwitch from './components/IO/InputSwitch';
-import OutputIndicator from './components/IO/OutputIndicator';
-import Wire from './components/Wires/Wire';
-import Toolbar from './components/UI/Toolbar';
-import HelpPanel from './components/UI/HelpPanel';
-import SaveLoadPanel from './components/UI/SaveLoadPanel';
-import useSimulatorStore from './stores/simulatorStore';
-import BinaryDisplay from './components/IO/BinaryDisplay';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import { Stage, Layer, Group, Rect, Text } from "react-konva";
+import ANDGate from "./components/Gates/ANDGate";
+import ORGate from "./components/Gates/ORGate";
+import NOTGate from "./components/Gates/NOTGate";
+import XORGate from "./components/Gates/XORGate";
+import InputSwitch from "./components/IO/InputSwitch";
+import OutputIndicator from "./components/IO/OutputIndicator";
+import Wire from "./components/Wires/Wire";
+import Toolbar from "./components/UI/Toolbar";
+import HelpPanel from "./components/UI/HelpPanel";
+import SaveLoadPanel from "./components/UI/SaveLoadPanel";
+import useSimulatorStore from "./stores/simulatorStore";
+import BinaryDisplay from "./components/IO/BinaryDisplay";
+import "./App.css";
 
 function App() {
   const [dimensions, setDimensions] = useState({
     width: window.innerWidth,
-    height: window.innerHeight
+    height: window.innerHeight,
   });
   const [isSpacePressed, setIsSpacePressed] = useState(false);
 
@@ -48,7 +48,7 @@ function App() {
     duplicateSelectedComponents,
     calculateLogic,
     stageScale,
-    setZoom
+    setZoom,
   } = useSimulatorStore();
 
   useEffect(() => {
@@ -60,8 +60,11 @@ function App() {
       const defaultSize = { w: 80, h: 55 };
       const sizeMap = { BINARY_DISPLAY: { w: 110, h: 210 } };
 
-      let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
-      components.forEach(c => {
+      let minX = Infinity,
+        maxX = -Infinity,
+        minY = Infinity,
+        maxY = -Infinity;
+      components.forEach((c) => {
         const size = sizeMap[c.type] || defaultSize;
         minX = Math.min(minX, c.x);
         maxX = Math.max(maxX, c.x + size.w);
@@ -74,7 +77,7 @@ function App() {
       const scale = Math.min(
         (dimensions.width - padding * 2) / bboxW,
         (dimensions.height - padding * 2) / bboxH,
-        1
+        1,
       );
       const offsetX = (dimensions.width - bboxW * scale) / 2 - minX * scale;
       const offsetY = (dimensions.height - bboxH * scale) / 2 - minY * scale;
@@ -86,24 +89,24 @@ function App() {
     const handleResize = () => {
       setDimensions({
         width: window.innerWidth,
-        height: window.innerHeight
+        height: window.innerHeight,
       });
     };
 
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
       // Space key for panning
-      if (e.key === ' ' && !isSpacePressed) {
+      if (e.key === " " && !isSpacePressed) {
         e.preventDefault();
         setIsSpacePressed(true);
       }
 
       // Delete components
-      if (e.key === 'Delete' || e.key === 'Backspace') {
+      if (e.key === "Delete" || e.key === "Backspace") {
         if (selectedComponents.length > 0) {
           e.preventDefault();
           removeSelectedComponents();
@@ -111,31 +114,33 @@ function App() {
       }
 
       // Escape to cancel
-      if (e.key === 'Escape') {
+      if (e.key === "Escape") {
         cancelWireDrawing();
         cancelSelection();
       }
 
       // Ctrl+A to select all
-      if (e.key === 'a' && (e.ctrlKey || e.metaKey)) {
+      if (e.key === "a" && (e.ctrlKey || e.metaKey)) {
         e.preventDefault();
         selectAllComponents();
       }
 
       // Arrow keys to move selected components
-      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+      if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
         if (selectedComponents.length > 0) {
           e.preventDefault();
           const delta = e.shiftKey ? 10 : 1;
-          const deltaX = e.key === 'ArrowLeft' ? -delta : e.key === 'ArrowRight' ? delta : 0;
-          const deltaY = e.key === 'ArrowUp' ? -delta : e.key === 'ArrowDown' ? delta : 0;
+          const deltaX =
+            e.key === "ArrowLeft" ? -delta : e.key === "ArrowRight" ? delta : 0;
+          const deltaY =
+            e.key === "ArrowUp" ? -delta : e.key === "ArrowDown" ? delta : 0;
           moveSelectedComponents(deltaX, deltaY);
         }
       }
     };
 
     const handleKeyUp = (e) => {
-      if (e.key === ' ') {
+      if (e.key === " ") {
         setIsSpacePressed(false);
         if (isPanning) {
           finishPanning();
@@ -143,14 +148,23 @@ function App() {
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
     return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('keyup', handleKeyUp);
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
     };
-  }, [selectedComponents, removeSelectedComponents, cancelWireDrawing, cancelSelection,
-      selectAllComponents, moveSelectedComponents, isSpacePressed, isPanning, finishPanning]);
+  }, [
+    selectedComponents,
+    removeSelectedComponents,
+    cancelWireDrawing,
+    cancelSelection,
+    selectAllComponents,
+    moveSelectedComponents,
+    isSpacePressed,
+    isPanning,
+    finishPanning,
+  ]);
 
   const ZOOM_FACTOR = 1.2;
   const MIN_ZOOM = 0.1;
@@ -160,14 +174,22 @@ function App() {
     const newScale = Math.min(stageScale * ZOOM_FACTOR, MAX_ZOOM);
     const cx = dimensions.width / 2;
     const cy = dimensions.height / 2;
-    setZoom(newScale, cx - (cx - stagePosition.x) * (newScale / stageScale), cy - (cy - stagePosition.y) * (newScale / stageScale));
+    setZoom(
+      newScale,
+      cx - (cx - stagePosition.x) * (newScale / stageScale),
+      cy - (cy - stagePosition.y) * (newScale / stageScale),
+    );
   };
 
   const handleZoomOut = () => {
     const newScale = Math.max(stageScale / ZOOM_FACTOR, MIN_ZOOM);
     const cx = dimensions.width / 2;
     const cy = dimensions.height / 2;
-    setZoom(newScale, cx - (cx - stagePosition.x) * (newScale / stageScale), cy - (cy - stagePosition.y) * (newScale / stageScale));
+    setZoom(
+      newScale,
+      cx - (cx - stagePosition.x) * (newScale / stageScale),
+      cy - (cy - stagePosition.y) * (newScale / stageScale),
+    );
   };
 
   const handleStageMouseDown = (e) => {
@@ -231,23 +253,23 @@ function App() {
       x: component.x,
       y: component.y,
       inputs: component.inputs,
-      output: component.output
+      output: component.output,
     };
 
     switch (component.type) {
-      case 'AND':
+      case "AND":
         return <ANDGate {...commonProps} />;
-      case 'OR':
+      case "OR":
         return <ORGate {...commonProps} />;
-      case 'NOT':
+      case "NOT":
         return <NOTGate {...commonProps} />;
-      case 'XOR':
+      case "XOR":
         return <XORGate {...commonProps} />;
-      case 'INPUT':
+      case "INPUT":
         return <InputSwitch {...commonProps} />;
-      case 'OUTPUT':
+      case "OUTPUT":
         return <OutputIndicator {...commonProps} />;
-      case 'BINARY_DISPLAY':
+      case "BINARY_DISPLAY":
         return <BinaryDisplay {...commonProps} />;
       default:
         return null;
@@ -283,18 +305,26 @@ function App() {
       <HelpPanel />
       <SaveLoadPanel />
       <div className="zoom-controls">
-        <button className="zoom-btn" onClick={handleZoomIn}>+</button>
-        <button className="zoom-btn" onClick={handleZoomOut}>−</button>
+        <button className="zoom-btn" onClick={handleZoomIn}>
+          +
+        </button>
+        <button className="zoom-btn" onClick={handleZoomOut}>
+          −
+        </button>
       </div>
       <Stage
         width={dimensions.width}
         height={dimensions.height}
         style={{
-          position: 'absolute',
+          position: "absolute",
           top: 0,
           left: 0,
-          backgroundColor: '#f5f5f5',
-          cursor: isDrawingWire ? 'crosshair' : isPanning || isSpacePressed ? 'grab' : 'default'
+          backgroundColor: "#f5f5f5",
+          cursor: isDrawingWire
+            ? "crosshair"
+            : isPanning || isSpacePressed
+              ? "grab"
+              : "default",
         }}
         x={stagePosition.x}
         y={stagePosition.y}
@@ -306,14 +336,12 @@ function App() {
         <Layer>
           <Group scaleX={stageScale} scaleY={stageScale}>
             {/* Render permanent wires */}
-            {wires.map(wire => (
+            {wires.map((wire) => (
               <Wire key={wire.id} {...wire} />
             ))}
 
             {/* Render temporary wire while drawing */}
-            {tempWire && (
-              <Wire {...tempWire} isActive={false} />
-            )}
+            {tempWire && <Wire {...tempWire} isActive={false} />}
 
             {/* Render components */}
             {components.map(renderComponent)}
@@ -358,16 +386,16 @@ function App() {
                 cornerRadius={5}
                 onClick={duplicateSelectedComponents}
                 onMouseEnter={(e) => {
-                  e.target.getStage().container().style.cursor = 'pointer';
+                  e.target.getStage().container().style.cursor = "pointer";
                 }}
                 onMouseLeave={(e) => {
-                  e.target.getStage().container().style.cursor = 'default';
+                  e.target.getStage().container().style.cursor = "default";
                 }}
               />
               <Text
                 x={20 - stagePosition.x}
                 y={dimensions.height - 88 - stagePosition.y}
-                text={`Duplicate ${selectedComponents.length} component${selectedComponents.length > 1 ? 's' : ''}`}
+                text={`Duplicate ${selectedComponents.length} component${selectedComponents.length > 1 ? "s" : ""}`}
                 fontSize={13}
                 fill="white"
                 fontFamily="Arial"
